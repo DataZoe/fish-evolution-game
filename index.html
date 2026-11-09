@@ -5,26 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#052c4f" />
     <title>Fish Evolution</title>
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Critical sizing fallback keeps the game full-screen even if Edge has stale CSS cached. */
+      html, body { width:100%; height:100%; min-height:100%; margin:0; overflow:hidden; }
+      .game-shell { position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; overflow:hidden; }
+      #gameCanvas { position:absolute; inset:0; display:block; width:100%; height:100%; touch-action:none; }
+    </style>
+    <link rel="stylesheet" href="style.css?v=4" />
   </head>
   <body>
-    <div class="game-shell">
-      <div class="hud">
+    <main class="game-shell">
+      <canvas id="gameCanvas" aria-label="Fish Evolution game"></canvas>
+      <section class="hud" aria-label="Game status">
         <div class="title-row">
           <div class="title-wrap"><span class="label">Stage</span><strong id="stageName">Fry</strong></div>
-          <div class="title-wrap right"><span class="label">Eaten</span><strong id="eatenValue">0</strong></div>
           <div class="title-wrap right"><span class="label">Score</span><strong id="scoreValue">0</strong></div>
-          <button id="rebirthButton" class="rebirth-button" type="button" aria-label="Start a new run">↻ <span>Rebirth</span></button>
+          <button id="rebirthButton" class="rebirth-button" type="button" aria-label="Rebirth: start a new run">↻ <span>Rebirth</span></button>
         </div>
         <div class="meter-wrap">
           <div class="meter-head"><span>Evolution energy</span><span id="energyValue">0%</span></div>
           <div class="meter-track"><div id="energyFill"></div></div>
         </div>
-      </div>
-      <div id="bossAlert" class="boss-alert" role="status" aria-live="polite">BOSS FISH APPROACHING!</div>
-      <canvas id="gameCanvas" aria-label="Fish Evolution game. Eat smaller fish and avoid predators."></canvas>
+      </section>
       <div class="controls-card"><div class="controls-text">Move: WASD, arrows, or touch and drag</div></div>
-    </div>
-    <script src="game.js"></script>
+    </main>
+    <script src="game.js?v=4"></script>
+    <script>
+      // Reloading starts a fresh run using the current game build.
+      document.getElementById('rebirthButton').addEventListener('click', () => {
+        if (window.confirm('Start a new run? Your current score and stage will reset.')) window.location.reload();
+      });
+    </script>
   </body>
 </html>

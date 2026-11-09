@@ -1,23 +1,13 @@
 # Fish Evolution Game
 
-A touch-friendly fish-eating game for web browsers, including iPad. Eat smaller fish, avoid predators, evolve through five stages, and watch for occasional boss fish.
+A browser and iPad fish-eating game. Eat smaller fish, evolve, and avoid predators.
 
 ## Play
 
-Once the GitHub Pages deployment succeeds, visit https://datazoe.github.io/fish-evolution-game/ . The published site is public on the internet.
+https://datazoe.github.io/fish-evolution-game/
 
-## Controls
+Desktop controls: WASD or arrow keys. On touchscreens, drag on the water. Use **Rebirth** to confirm and restart the run.
 
-- Touch and drag on the game area to steer on iPad and other touchscreens.
-- Use WASD or the arrow keys on a keyboard.
-- Eat smaller fish to gain energy and score; the Eaten counter shows your total for the current run.
-- A boss fish occasionally appears, with a three-hit health bar and a bonus reward when defeated.
-- Press **Rebirth** to confirm and restart the run.
+## Display notes
 
-## Display sizing fix
-
-The full responsive stylesheet ensures the canvas fills the browser viewport on desktop and iPad. If an older page still looks small, refresh after the Pages deployment completes (a hard refresh may clear cached CSS).
-
-## Run locally
-
-Open `index.html` in a browser, or start a static server with `python3 -m http.server 8000`, then visit http://localhost:8000.
+The game now uses a fixed full-viewport canvas and versioned CSS/JavaScript URLs to prevent stale Edge assets from keeping an old layout. After the Pages deployment completes, refresh with **Ctrl+F5** on Windows or **Ctrl+Shift+R** to force a fresh load.
