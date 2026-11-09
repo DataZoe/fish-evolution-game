@@ -1,167 +1,29 @@
-:root {
-  --bg-1: #031f35;
-  --bg-2: #083f5a;
-  --panel: rgba(6, 27, 44, 0.66);
-  --panel-line: rgba(150, 210, 255, 0.45);
-  --meter: rgba(122, 224, 255, 0.22);
-  --meter-fill-1: #7be8ff;
-  --meter-fill-2: #ffc857;
-  --text: #effaff;
-  --muted: #d4ecff;
-  --shadow: rgba(0, 0, 0, 0.3);
-}
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: Inter, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #0a5079 0%, var(--bg-2) 22%, var(--bg-1) 58%, #010d18 100%);
-  color: var(--text);
-}
-
-body {
-  display: grid;
-  place-items: center;
-}
-
-.game-shell {
-  position: relative;
-  width: min(100vw, 1400px);
-  height: min(100vh, 900px);
-  border: 1px solid rgba(162, 220, 255, 0.28);
-  border-radius: 22px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(10, 70, 109, 0.24), rgba(2, 18, 30, 0.35));
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-}
-
-#gameCanvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-  background: linear-gradient(180deg, rgba(31, 119, 166, 0.8), rgba(9, 35, 55, 0.94));
-  touch-action: none;
-}
-
-.hud {
+/* Additional HUD for eaten count and periodic boss encounters. */
+.boss-alert {
   position: absolute;
-  inset: 18px 18px auto 18px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  z-index: 3;
+  top: 150px;
+  left: 50%;
+  transform: translate(-50%, -8px) scale(.96);
+  opacity: 0;
   pointer-events: none;
-}
-
-.title-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.title-wrap {
-  min-width: 120px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: rgba(6, 22, 34, 0.64);
-  border: 1px solid var(--panel-line);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-}
-
-.title-wrap.right {
-  text-align: right;
-}
-
-.label {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.title-wrap strong {
-  display: block;
-  margin-top: 3px;
-  font-size: clamp(1.1rem, 2vw, 1.8rem);
-}
-
-.meter-wrap {
-  width: min(420px, 52vw);
-  padding: 10px 12px 12px;
-  border-radius: 14px;
-  background: var(--panel);
-  border: 1px solid var(--panel-line);
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
-}
-
-.meter-head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.meter-track {
-  height: 16px;
+  padding: 11px 20px;
+  border: 1px solid rgba(255, 215, 130, .9);
   border-radius: 999px;
-  background: var(--meter);
-  overflow: hidden;
-  border: 1px solid rgba(167, 232, 255, 0.5);
+  background: rgba(91, 13, 43, .9);
+  color: #fff3bd;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-align: center;
+  box-shadow: 0 0 28px rgba(255, 77, 117, .55);
+  transition: opacity .2s ease, transform .2s ease;
 }
-
-#energyFill {
-  width: 0%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--meter-fill-1), var(--meter-fill-2));
-  box-shadow: 0 0 20px rgba(123, 232, 255, 0.9);
-  transition: width 0.2s ease;
-}
-
-.controls-card {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  z-index: 2;
-  max-width: min(280px, 50vw);
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(4, 19, 31, 0.68);
-  border: 1px solid rgba(160, 221, 255, 0.38);
-  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.2);
-  color: var(--muted);
-}
-
-.controls-text {
-  font-size: 12px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
+.boss-alert.visible { opacity: 1; transform: translate(-50%, 0) scale(1); }
 @media (max-width: 640px) {
-  .game-shell {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    border: none;
-  }
-
-  .meter-wrap {
-    width: min(300px, 70vw);
-  }
-
-  .title-wrap {
-    min-width: 100px;
-  }
+  .hud { inset: max(10px, env(safe-area-inset-top)) 10px auto; }
+  .title-row { gap: 6px; }
+  .title-wrap { min-width: 0; flex: 1; padding: 8px 9px; }
+  .title-wrap strong { font-size: clamp(1rem, 4vw, 1.35rem); }
+  .boss-alert { top: 145px; width: max-content; max-width: 90vw; }
 }

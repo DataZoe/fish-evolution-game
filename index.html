@@ -11,33 +11,19 @@
     <div class="game-shell">
       <div class="hud">
         <div class="title-row">
-          <div class="title-wrap">
-            <span class="label">Stage</span>
-            <strong id="stageName">Fry</strong>
-          </div>
-          <div class="title-wrap right">
-            <span class="label">Score</span>
-            <strong id="scoreValue">0</strong>
-          </div>
+          <div class="title-wrap"><span class="label">Stage</span><strong id="stageName">Fry</strong></div>
+          <div class="title-wrap right"><span class="label">Eaten</span><strong id="eatenValue">0</strong></div>
+          <div class="title-wrap right"><span class="label">Score</span><strong id="scoreValue">0</strong></div>
         </div>
         <div class="meter-wrap">
-          <div class="meter-head">
-            <span>Energy</span>
-            <span id="energyValue">0%</span>
-          </div>
-          <div class="meter-track">
-            <div id="energyFill"></div>
-          </div>
+          <div class="meter-head"><span>Evolution energy</span><span id="energyValue">0%</span></div>
+          <div class="meter-track"><div id="energyFill"></div></div>
         </div>
       </div>
-
-      <canvas id="gameCanvas" aria-label="Fish evolution game"></canvas>
-
-      <div class="controls-card">
-        <div class="controls-text">Move with WASD, arrow keys, or drag/tap</div>
-      </div>
+      <div id="bossAlert" class="boss-alert" role="status" aria-live="polite">BOSS FISH APPROACHING!</div>
+      <canvas id="gameCanvas" aria-label="Fish Evolution game. Eat smaller fish and avoid predators."></canvas>
+      <div class="controls-card"><div class="controls-text">Move: WASD, arrows, or touch and drag</div></div>
     </div>
-
     <script src="game.js"></script>
   </body>
 </html>

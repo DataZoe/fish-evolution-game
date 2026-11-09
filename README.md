@@ -1,10 +1,10 @@
 # Fish Evolution Game
 
-A touch-friendly fish-eating game for web browsers, including iPad. Swim around, eat smaller fish, avoid larger predators, and evolve through five stages.
+A touch-friendly fish-eating game for web browsers, including iPad. Swim around, eat smaller fish, avoid predators, and evolve through five stages.
 
 ## Play
 
-Once the GitHub Pages Actions deployment succeeds, visit https://datazoe.github.io/fish-evolution-game/ . The published site is public on the internet.
+Once the GitHub Pages deployment succeeds, visit https://datazoe.github.io/fish-evolution-game/ . The published site is public on the internet.
 
 ## Controls
 
@@ -12,6 +12,7 @@ Once the GitHub Pages Actions deployment succeeds, visit https://datazoe.github.
 - Use WASD or the arrow keys on a keyboard.
 - Eat smaller fish to gain energy and score; avoid bigger predators.
 - Evolve through Fry, Reefling, Reef Hunter, Deep Guardian, and Apex.
+- The **Eaten** counter tracks total fish eaten. A boss fish occasionally appears, has a three-hit health bar, and awards 25 points and extra evolution energy when defeated. You need to grow large enough to fight it safely.
 
 ## Run locally
 
@@ -22,7 +23,3 @@ python3 -m http.server 8000
 ```
 
 Then visit http://localhost:8000.
-
-## Art reference
-
-The reference image currently in the repository is [`Image (19).jpg`](./Image%20(19).jpg). The game uses custom-drawn evolution-stage silhouettes inspired by a colorful fish illustration. Add separate images for each stage if you want the designs traced or used directly as game sprites.
