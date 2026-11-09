@@ -1,6 +1,6 @@
 # Fish Evolution Game
 
-A touch-friendly fish-eating game for web browsers, including iPad. Swim around, eat smaller fish, avoid predators, and evolve through five stages.
+A touch-friendly fish-eating game for web browsers, including iPad. Eat smaller fish, avoid predators, evolve through five stages, and watch for occasional boss fish.
 
 ## Play
 
@@ -11,8 +11,9 @@ Once the GitHub Pages deployment succeeds, visit https://datazoe.github.io/fish-
 - Touch and drag on the game area to steer on iPad and other touchscreens.
 - Use WASD or the arrow keys on a keyboard.
 - Eat smaller fish to gain energy and score; avoid bigger predators.
-- Evolve through Fry, Reefling, Reef Hunter, Deep Guardian, and Apex.
-- The **Eaten** counter tracks total fish eaten. A boss fish occasionally appears, has a three-hit health bar, and awards 25 points and extra evolution energy when defeated. You need to grow large enough to fight it safely.
+- The Eaten counter shows the fish eaten during the current run.
+- A boss fish occasionally appears, has a three-hit health bar, and awards bonus energy and points when defeated.
+- Press **Rebirth** to confirm and start over. Your stage, score, eaten count, energy, fish, and boss encounter reset.
 
 ## Run locally
 

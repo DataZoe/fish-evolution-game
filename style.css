@@ -1,29 +1,27 @@
-/* Additional HUD for eaten count and periodic boss encounters. */
+/* Additional HUD for eaten count, periodic bosses, and a touch-friendly reset. */
 .boss-alert {
-  position: absolute;
-  z-index: 3;
-  top: 150px;
-  left: 50%;
-  transform: translate(-50%, -8px) scale(.96);
-  opacity: 0;
-  pointer-events: none;
-  padding: 11px 20px;
-  border: 1px solid rgba(255, 215, 130, .9);
-  border-radius: 999px;
-  background: rgba(91, 13, 43, .9);
-  color: #fff3bd;
-  font-size: clamp(12px, 2vw, 18px);
-  font-weight: 900;
-  letter-spacing: .12em;
-  text-align: center;
-  box-shadow: 0 0 28px rgba(255, 77, 117, .55);
-  transition: opacity .2s ease, transform .2s ease;
+  position: absolute; z-index: 3; top: 150px; left: 50%;
+  transform: translate(-50%, -8px) scale(.96); opacity: 0; pointer-events: none;
+  padding: 11px 20px; border: 1px solid rgba(255, 215, 130, .9); border-radius: 999px;
+  background: rgba(91, 13, 43, .9); color: #fff3bd; font-size: clamp(12px, 2vw, 18px);
+  font-weight: 900; letter-spacing: .12em; text-align: center;
+  box-shadow: 0 0 28px rgba(255, 77, 117, .55); transition: opacity .2s ease, transform .2s ease;
 }
 .boss-alert.visible { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.rebirth-button {
+  min-height: 48px; padding: 8px 13px; border: 1px solid rgba(255, 220, 160, .8);
+  border-radius: 14px; background: linear-gradient(145deg, #ffca76, #f28a63); color: #382032;
+  font: inherit; font-weight: 850; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, .24);
+  touch-action: manipulation;
+}
+.rebirth-button:hover { filter: brightness(1.08); }
+.rebirth-button:active { transform: translateY(1px); }
+.rebirth-button:focus-visible { outline: 3px solid white; outline-offset: 2px; }
 @media (max-width: 640px) {
   .hud { inset: max(10px, env(safe-area-inset-top)) 10px auto; }
   .title-row { gap: 6px; }
   .title-wrap { min-width: 0; flex: 1; padding: 8px 9px; }
   .title-wrap strong { font-size: clamp(1rem, 4vw, 1.35rem); }
+  .rebirth-button { min-height: 42px; padding: 7px 9px; font-size: 12px; }
   .boss-alert { top: 145px; width: max-content; max-width: 90vw; }
 }

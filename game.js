@@ -9,6 +9,7 @@
   const energyValueEl = document.getElementById('energyValue');
   const energyFillEl = document.getElementById('energyFill');
   const bossAlertEl = document.getElementById('bossAlert');
+  const rebirthButton = document.getElementById('rebirthButton');
   if (!canvas || !ctx) return;
 
   const world = { width: 2400, height: 1650 };
@@ -24,7 +25,7 @@
   const state = {
     score: 0, eaten: 0, energy: 0, cameraX: 0, cameraY: 0, width: 0, height: 0, lastTime: 0,
     prey: [], predators: [], bubbles: [], pointerDown: false, pointerX: 0, pointerY: 0,
-    boss: null, bossCooldown: 18, bossBannerUntil: 0, lastDamage: 0, invulnerableUntil: 0,
+    boss: null, bossCooldown: 18, bossBannerUntil: 0, invulnerableUntil: 0, bossDefeated: false,
   };
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const random = (min, max) => min + Math.random() * (max - min);
@@ -53,8 +54,9 @@
     if (eatenValueEl) eatenValueEl.textContent = String(state.eaten);
     const next = stages[player.stage + 1];
     const pct = next ? (state.energy - stage.threshold) / (next.threshold - stage.threshold) : 1;
-    if (energyValueEl) energyValueEl.textContent = `${Math.round(clamp(pct * 100, 0, 100))}%`;
-    if (energyFillEl) energyFillEl.style.width = `${clamp(pct * 100, 0, 100)}%`;
+    const percent = clamp(pct * 100, 0, 100);
+    if (energyValueEl) energyValueEl.textContent = `${Math.round(percent)}%`;
+    if (energyFillEl) energyFillEl.style.width = `${percent}%`;
   }
   function updateStage() {
     let next = 0;
@@ -62,6 +64,20 @@
     player.stage = next;
     player.radius += (stages[next].radius - player.radius) * 0.12;
     updateHud();
+  }
+  function rebirth() {
+    if (!window.confirm('Start a new run? Your stage, score, and eaten count will reset.')) return;
+    state.score = 0; state.eaten = 0; state.energy = 0;
+    state.boss = null; state.bossCooldown = 18; state.bossBannerUntil = 0;
+    state.invulnerableUntil = 0; state.bossDefeated = false;
+    player.x = world.width / 2; player.y = world.height / 2;
+    player.vx = 0; player.vy = 0; player.radius = stages[0].radius; player.stage = 0; player.angle = 0;
+    state.cameraX = clamp(player.x - state.width / 2, 0, world.width - state.width);
+    state.cameraY = clamp(player.y - state.height / 2, 0, world.height - state.height);
+    state.pointerDown = false;
+    Object.keys(keys).forEach((key) => { keys[key] = false; });
+    if (bossAlertEl) { bossAlertEl.classList.remove('visible'); bossAlertEl.textContent = 'BOSS FISH APPROACHING!'; }
+    seedWorld(); updateHud();
   }
   function steer(dt) {
     let x = 0, y = 0;
@@ -105,6 +121,7 @@
     const y = edge === 2 ? 50 : edge === 3 ? world.height - 50 : random(50, world.height - 50);
     state.boss = { x, y, vx: 0, vy: 0, radius: 82, color: '#9f315e', accent: '#ffd166', predator: true, hp: 3, maxHp: 3, age: 0, hitAt: 0 };
     state.bossBannerUntil = performance.now() + 3500;
+    state.bossDefeated = false;
   }
   function updateBoss(dt, now) {
     if (!state.boss) {
@@ -124,8 +141,7 @@
         boss.hp -= 1; boss.hitAt = now;
         if (boss.hp <= 0) {
           state.energy += 110; state.score += 25; state.eaten += 1;
-          state.boss = null; state.bossCooldown = random(28, 42);
-          state.bossBannerUntil = now + 2200;
+          state.boss = null; state.bossCooldown = random(28, 42); state.bossBannerUntil = now + 2200; state.bossDefeated = true;
           if (bossAlertEl) { bossAlertEl.textContent = 'BOSS DEFEATED! +25'; bossAlertEl.classList.add('visible'); }
           return;
         }
@@ -144,8 +160,7 @@
     for (const fish of state.prey) {
       const dist = Math.hypot(fish.x - player.x, fish.y - player.y);
       if (dist < player.radius * 0.7 + fish.radius * 0.7 && player.radius > fish.radius * 1.08) {
-        state.energy += 16 + fish.radius * 0.8; state.score += 1; state.eaten += 1;
-        Object.assign(fish, makeFish());
+        state.energy += 16 + fish.radius * 0.8; state.score += 1; state.eaten += 1; Object.assign(fish, makeFish());
       }
     }
     for (const fish of state.predators) {
@@ -161,18 +176,15 @@
     }
   }
   function update(dt, now) {
-    steer(dt);
-    state.prey.forEach((fish) => moveFish(fish, dt, true));
-    state.predators.forEach((fish) => moveFish(fish, dt));
-    eatAndCollide(now);
-    updateBoss(dt, now);
+    steer(dt); state.prey.forEach((fish) => moveFish(fish, dt, true)); state.predators.forEach((fish) => moveFish(fish, dt));
+    eatAndCollide(now); updateBoss(dt, now);
     state.bubbles.forEach((bubble) => { bubble.y -= bubble.speed * dt; if (bubble.y < 0) { bubble.y = world.height; bubble.x = random(0, world.width); } });
     state.cameraX = clamp(player.x - state.width / 2, 0, world.width - state.width);
     state.cameraY = clamp(player.y - state.height / 2, 0, world.height - state.height);
     updateStage();
     if (bossAlertEl) {
       if (state.boss && now < state.bossBannerUntil) { bossAlertEl.textContent = 'BOSS FISH APPROACHING!'; bossAlertEl.classList.add('visible'); }
-      else if (!state.boss && now < state.bossBannerUntil && !bossAlertEl.textContent.includes('DEFEATED')) { bossAlertEl.textContent = 'BOSS FISH APPROACHING!'; bossAlertEl.classList.add('visible'); }
+      else if (!state.boss && now < state.bossBannerUntil && !state.bossDefeated) { bossAlertEl.textContent = 'BOSS FISH APPROACHING!'; bossAlertEl.classList.add('visible'); }
       else if (now >= state.bossBannerUntil) bossAlertEl.classList.remove('visible');
     }
   }
@@ -192,13 +204,11 @@
     if (isPlayer && stage.kind >= 4) { ctx.fillStyle = '#fff1aa'; ctx.beginPath(); ctx.moveTo(radius * .4, -radius * .5); ctx.lineTo(radius * .95, -radius * .82); ctx.lineTo(radius * .78, -radius * .28); ctx.closePath(); ctx.fill(); }
     ctx.fillStyle = 'rgba(255,255,255,.42)'; ctx.beginPath(); ctx.ellipse(radius * .4, -radius * .2, radius * .27, radius * .12, -.15, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#14253a'; ctx.beginPath(); ctx.arc(radius * .76, -radius * .13, Math.max(2, radius * .095), 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(radius * .79, -radius * .17, Math.max(.8, radius * .03), 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(radius * .79, -radius * .17, Math.max(.8, radius * .03), 0, Math.PI * 2); ctx.fill(); ctx.restore();
   }
   function drawBoss() {
     if (!state.boss) return;
-    const b = state.boss;
-    drawFish(b);
+    const b = state.boss; drawFish(b);
     const x = b.x - state.cameraX, y = b.y - state.cameraY - b.radius - 18;
     ctx.fillStyle = 'rgba(30,10,20,.75)'; ctx.fillRect(x - 34, y, 68, 8);
     ctx.fillStyle = '#ff526e'; ctx.fillRect(x - 32, y + 2, 64 * b.hp / b.maxHp, 4);
@@ -225,6 +235,7 @@
   canvas.addEventListener('pointermove', (event) => { if (state.pointerDown) pointerPosition(event); });
   canvas.addEventListener('pointerup', () => { state.pointerDown = false; });
   canvas.addEventListener('pointercancel', () => { state.pointerDown = false; });
+  if (rebirthButton) rebirthButton.addEventListener('click', rebirth);
   window.addEventListener('keydown', (event) => { const key = event.key.length === 1 ? event.key.toLowerCase() : event.key; if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(key)) event.preventDefault(); keys[key] = true; });
   window.addEventListener('keyup', (event) => { const key = event.key.length === 1 ? event.key.toLowerCase() : event.key; keys[key] = false; });
   window.addEventListener('blur', () => { Object.keys(keys).forEach((key) => { keys[key] = false; }); state.pointerDown = false; });
