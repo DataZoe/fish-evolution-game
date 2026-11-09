@@ -1,11 +1,54 @@
-# Fish Evolution
-
-A browser and iPad fish-eating game. Eat smaller fish, evolve, avoid predators, and collect occasional golden lightning pickups for a temporary speed boost.
-
-## Play
-
-https://datazoe.github.io/fish-evolution-game/
-
-Use WASD or arrow keys on desktop, or touch and drag on iPad. A lightning pickup spawns every 18–30 seconds near the current view. Swim into it to get a 6.5-second speed boost. Press Rebirth to confirm and restart the run.
-
-If Edge shows an older layout, hard-refresh with **Ctrl+F5** after the GitHub Pages deployment completes.
+:root { color-scheme: dark; --text:#effaff; --muted:#d4ecff; --panel:rgba(6,27,44,.78); --line:rgba(150,210,255,.48); }
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { width:100%; height:100%; min-width:320px; min-height:100%; margin:0; overflow:hidden; font-family:Inter,"Segoe UI",Arial,sans-serif; color:var(--text); background:radial-gradient(circle at top,#0a5079 0%,#083f5a 34%,#031f35 75%,#010d18 100%); }
+body { display:block; }
+.game-shell { position:fixed; inset:0; width:100vw; height:100vh; height:100dvh; overflow:hidden; isolation:isolate; background:linear-gradient(180deg,rgba(10,70,109,.24),rgba(2,18,30,.35)); }
+#gameCanvas { position:absolute; inset:0; z-index:0; display:block; width:100%; height:100%; background:linear-gradient(180deg,#1f77a6,#092337); touch-action:none; }
+.hud { position:absolute; inset:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) auto max(14px,env(safe-area-inset-left)); z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:9px; pointer-events:none; }
+.title-row { display:flex; align-items:stretch; gap:8px; max-width:100%; }
+.title-wrap { min-width:100px; padding:9px 13px; border-radius:14px; background:var(--panel); border:1px solid var(--line); box-shadow:0 10px 22px rgba(0,0,0,.2); }
+.title-wrap.right { text-align:right; }
+.label { display:block; font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); }
+.title-wrap strong { display:block; margin-top:3px; font-size:clamp(1.05rem,2vw,1.6rem); }
+.meter-wrap { width:min(390px,52vw); padding:9px 11px 11px; border-radius:14px; background:var(--panel); border:1px solid var(--line); box-shadow:0 12px 22px rgba(0,0,0,.2); }
+.meter-head { display:flex; justify-content:space-between; gap:12px; margin-bottom:7px; color:var(--muted); font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+.meter-track { height:14px; overflow:hidden; border:1px solid rgba(167,232,255,.5); border-radius:999px; background:rgba(122,224,255,.22); }
+#energyFill { width:0%; height:100%; border-radius:inherit; background:linear-gradient(90deg,#7be8ff,#ffc857); box-shadow:0 0 20px rgba(123,232,255,.9); transition:width .2s ease; }
+.controls-card { position:absolute; right:max(14px,env(safe-area-inset-right)); bottom:max(14px,env(safe-area-inset-bottom)); z-index:2; max-width:min(340px,55vw); padding:9px 11px; border:1px solid rgba(160,221,255,.38); border-radius:12px; background:rgba(4,19,31,.76); box-shadow:0 12px 22px rgba(0,0,0,.2); color:var(--muted); pointer-events:none; font-size:11px; letter-spacing:.04em; text-transform:uppercase; }
+.notice { position:absolute; z-index:3; top:50%; left:50%; transform:translate(-50%,-50%) scale(.96); opacity:0; pointer-events:none; max-width:90vw; padding:12px 20px; border:1px solid rgba(255,235,150,.9); border-radius:999px; background:rgba(12,48,67,.92); color:#fff1a8; font-size:clamp(14px,2vw,20px); font-weight:900; text-align:center; box-shadow:0 0 28px rgba(255,220,75,.48); transition:opacity .2s ease,transform .2s ease; }
+.notice.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+.boss-alert { position:absolute; z-index:3; top:max(142px,calc(env(safe-area-inset-top) + 120px)); left:50%; transform:translate(-50%,-8px) scale(.96); opacity:0; pointer-events:none; padding:10px 18px; border:1px solid rgba(255,215,130,.9); border-radius:999px; background:rgba(91,13,43,.9); color:#fff3bd; font-size:clamp(12px,2vw,18px); font-weight:900; letter-spacing:.12em; text-align:center; box-shadow:0 0 28px rgba(255,77,117,.55); transition:opacity .2s ease,transform .2s ease; }
+.boss-alert.visible { opacity:1; transform:translate(-50%,0) scale(1); }
+.rebirth-button { min-height:46px; padding:8px 14px; border:1px solid rgba(255,220,160,.9); border-radius:14px; background:linear-gradient(145deg,#ffca76,#f28a63); color:#382032; font:inherit; font-weight:850; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,.24); touch-action:manipulation; pointer-events:auto; }
+.rebirth-button:hover { filter:brightness(1.08); }
+.rebirth-button:active { transform:translateY(1px); }
+.rebirth-button:focus-visible { outline:3px solid white; outline-offset:2px; }
+.touch-pad { display:none; }
+@media (max-width:900px), (pointer:coarse) {
+  .touch-pad { position:absolute; z-index:4; left:max(18px,env(safe-area-inset-left)); bottom:max(18px,env(safe-area-inset-bottom)); display:grid; grid-template-columns:repeat(3,58px); grid-template-rows:repeat(2,58px); gap:5px; }
+  .touch-pad button { width:58px; height:58px; border:1px solid rgba(225,250,255,.65); border-radius:17px; background:rgba(5,35,54,.68); color:#fff; font-size:24px; font-weight:800; box-shadow:0 4px 14px rgba(0,0,0,.25); touch-action:none; user-select:none; -webkit-user-select:none; }
+  .touch-pad button:active { background:rgba(52,150,178,.92); transform:scale(.96); }
+  .pad-up { grid-column:2; grid-row:1; } .pad-left { grid-column:1; grid-row:2; } .pad-down { grid-column:2; grid-row:2; } .pad-right { grid-column:3; grid-row:2; }
+}
+@media (max-width:700px) {
+  .hud { inset:max(9px,env(safe-area-inset-top)) max(9px,env(safe-area-inset-right)) auto max(9px,env(safe-area-inset-left)); gap:7px; }
+  .title-row { width:100%; gap:5px; }
+  .title-wrap { min-width:0; flex:1 1 0; padding:7px 8px; }
+  .label { font-size:9px; letter-spacing:.07em; }
+  .title-wrap strong { font-size:clamp(.85rem,4vw,1.15rem); }
+  .rebirth-button { min-height:40px; flex:0 0 auto; padding:6px 9px; font-size:12px; }
+  .rebirth-button span { display:none; }
+  .meter-wrap { width:min(320px,76vw); padding:7px 9px 9px; }
+  .meter-head { font-size:10px; }
+  .controls-card { right:max(9px,env(safe-area-inset-right)); bottom:max(9px,env(safe-area-inset-bottom)); max-width:45vw; padding:7px 9px; font-size:9px; }
+  .touch-pad { left:max(10px,env(safe-area-inset-left)); bottom:max(10px,env(safe-area-inset-bottom)); grid-template-columns:repeat(3,54px); grid-template-rows:repeat(2,54px); gap:4px; }
+  .touch-pad button { width:54px; height:54px; }
+  .boss-alert { top:max(128px,calc(env(safe-area-inset-top) + 110px)); width:max-content; max-width:90vw; }
+}
+@media (max-height:430px) and (orientation:landscape) {
+  .hud { inset:max(7px,env(safe-area-inset-top)) 9px auto; flex-direction:row; align-items:flex-start; }
+  .title-row { width:auto; }
+  .title-wrap { min-width:75px; padding:6px 8px; }
+  .meter-wrap { width:min(240px,32vw); padding:6px 8px; }
+  .touch-pad { transform:scale(.82); transform-origin:bottom left; }
+}
